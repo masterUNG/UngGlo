@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1063702275544",
+    "firebase_url": "https://ungglo.firebaseio.com",
+    "project_id": "ungglo",
+    "storage_bucket": "ungglo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1063702275544:android:632dbed6f9fa69250cbead",
+        "android_client_info": {
+          "package_name": "com.flutterthailand.ungglo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1063702275544-mfgqa3410t58oopas0ttfs6jpoi8gfau.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA61b150uZrpqei7b-K_Wkwh120wYyWL6E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1063702275544-mfgqa3410t58oopas0ttfs6jpoi8gfau.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
