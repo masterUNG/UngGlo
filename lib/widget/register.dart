@@ -3,22 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ungglo/utility/my_style.dart';
+import 'package:ungglo/utility/normal_dialog.dart';
 
 class Register extends StatefulWidget {
   @override
   _RegisterState createState() => _RegisterState();
 }
 
-
-
-
-
-
-
-
 class _RegisterState extends State<Register> {
   // Field
   File file;
+  String name, email, password;
 
   // Method
   Widget nameForm() {
@@ -26,6 +21,9 @@ class _RegisterState extends State<Register> {
     return Container(
       padding: EdgeInsets.only(left: 30.0, right: 30.0),
       child: TextField(
+        onChanged: (String string) {
+          name = string.trim();
+        },
         decoration: InputDecoration(
             enabledBorder:
                 UnderlineInputBorder(borderSide: BorderSide(color: color)),
@@ -47,6 +45,9 @@ class _RegisterState extends State<Register> {
     return Container(
       padding: EdgeInsets.only(left: 30.0, right: 30.0),
       child: TextField(
+        onChanged: (String string) {
+          email = string.trim();
+        },
         decoration: InputDecoration(
             enabledBorder:
                 UnderlineInputBorder(borderSide: BorderSide(color: color)),
@@ -68,6 +69,9 @@ class _RegisterState extends State<Register> {
     return Container(
       padding: EdgeInsets.only(left: 30.0, right: 30.0),
       child: TextField(
+        onChanged: (String string) {
+          password = string.trim();
+        },
         decoration: InputDecoration(
             enabledBorder:
                 UnderlineInputBorder(borderSide: BorderSide(color: color)),
@@ -108,7 +112,6 @@ class _RegisterState extends State<Register> {
       setState(() {
         file = object;
       });
-
     } catch (e) {}
   }
 
@@ -137,7 +140,7 @@ class _RegisterState extends State<Register> {
 
   Widget showAvatar() {
     return Container(
-      child: file == null  ? Image.asset('images/avatar.png') : Image.file(file) ,
+      child: file == null ? Image.asset('images/avatar.png') : Image.file(file),
       height: MediaQuery.of(context).size.height * 0.4,
       width: MediaQuery.of(context).size.width,
     );
@@ -147,7 +150,21 @@ class _RegisterState extends State<Register> {
     return IconButton(
       tooltip: 'Upload to Firebase',
       icon: Icon(Icons.cloud_upload),
-      onPressed: () {},
+      onPressed: () {
+        if (file == null) {
+          normalDialog(
+              context, 'Non Choose Avarar', 'Please Tap Camere or Grallery');
+        } else if (name == null ||
+            name.isEmpty ||
+            email == null ||
+            email.isEmpty ||
+            password == null ||
+            password.isEmpty) {
+          normalDialog(context, 'Have Space', 'Please Fill Every Blank');
+        } else {
+          
+        }
+      },
     );
   }
 
