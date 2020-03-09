@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:ungglo/utility/my_style.dart';
+import 'package:ungglo/utility/normal_dialog.dart';
+import 'package:ungglo/widget/my_service.dart';
 import 'package:ungglo/widget/register.dart';
 
 class Authen extends StatefulWidget {
@@ -10,17 +13,58 @@ class Authen extends StatefulWidget {
 
 class _AuthenState extends State<Authen> {
   // Field
+  bool status = true;
+  String user, password;
 
   // Method
+
+  @override
+  void initState() {
+    super.initState();
+    checkStatus();
+  }
+
+  Future<void> checkStatus() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    FirebaseUser firebaseUser = await auth.currentUser();
+    if (firebaseUser != null) {
+      routeToMyService();
+    } else {
+      setState(() {
+        status = false;
+      });
+    }
+  }
+
+  void routeToMyService() {
+    MaterialPageRoute route =
+        MaterialPageRoute(builder: (BuildContext buildContext) {
+      return MyService();
+    });
+    Navigator.of(context).pushAndRemoveUntil(route, (Route<dynamic> route) {
+      return false;
+    });
+  }
+
+  Widget showProcess() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
   Widget mySizebox() {
     return SizedBox(
       width: 5.0,
+      height: 10.0,
     );
   }
 
   Widget signUpButton() {
     return Expanded(
       child: OutlineButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
         borderSide: BorderSide(color: MyStyle().darkColor),
         child: Text(
           'Sign Up',
@@ -29,9 +73,11 @@ class _AuthenState extends State<Authen> {
         onPressed: () {
           print('You Click SignUp');
 
-          MaterialPageRoute route = MaterialPageRoute(builder: (BuildContext buildContext){return Register();});
+          MaterialPageRoute route =
+              MaterialPageRoute(builder: (BuildContext buildContext) {
+            return Register();
+          });
           Navigator.of(context).push(route);
-
         },
       ),
     );
@@ -40,14 +86,40 @@ class _AuthenState extends State<Authen> {
   Widget signInButton() {
     return Expanded(
       child: RaisedButton(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(30.0),
+        ),
         color: MyStyle().darkColor,
         child: Text(
           'Sign In',
           style: TextStyle(color: Colors.white),
         ),
-        onPressed: () {},
+        onPressed: () {
+          if (user == null ||
+              user.isEmpty ||
+              password == null ||
+              password.isEmpty) {
+            normalDialog(context, 'Have Space', 'Please Fill Every Blank');
+          } else {
+            checkAuthen();
+          }
+        },
       ),
     );
+  }
+
+  Future<void> checkAuthen() async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    await auth
+        .signInWithEmailAndPassword(email: user, password: password)
+        .then((response) {
+          routeToMyService();
+        })
+        .catchError((error) {
+          String title = error.code;
+          String message = error.message;
+          normalDialog(context, title, message);
+        });
   }
 
   Widget showButton() {
@@ -68,9 +140,26 @@ class _AuthenState extends State<Authen> {
   Widget passwordForm() {
     return Container(
       width: 250.0,
-      child: TextField(
-        obscureText: true,
-        decoration: InputDecoration(hintText: 'Password :'),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30.0),
+        ),
+        height: 35.0,
+        child: TextField(
+          onChanged: (value) => password = value.trim(),
+          style: TextStyle(color: MyStyle().darkColor),
+          obscureText: true,
+          decoration: InputDecoration(
+            prefixIcon: Icon(
+              Icons.lock_open,
+              color: MyStyle().darkColor,
+            ),
+            border: InputBorder.none,
+            hintText: 'Password :',
+            hintStyle: TextStyle(color: MyStyle().darkColor),
+          ),
+        ),
       ),
     );
   }
@@ -78,8 +167,28 @@ class _AuthenState extends State<Authen> {
   Widget userForm() {
     return Container(
       width: 250.0,
-      child: TextField(
-        decoration: InputDecoration(hintText: 'User :'),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30.0),
+          color: Colors.white,
+        ),
+        height: 35.0,
+        child: TextField(
+          onChanged: (value) => user = value.trim(),
+          style: TextStyle(color: MyStyle().darkColor),
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(
+              prefixIcon: Icon(
+                Icons.email,
+                color: MyStyle().darkColor,
+              ),
+              contentPadding: EdgeInsets.only(
+                left: 20.0,
+              ),
+              border: InputBorder.none,
+              hintText: 'User :',
+              hintStyle: TextStyle(color: MyStyle().darkColor)),
+        ),
       ),
     );
   }
@@ -108,23 +217,30 @@ class _AuthenState extends State<Authen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: RadialGradient(
-            colors: <Color>[Colors.white, MyStyle().primaryColor],radius: 1.0,
-          ),
+      body: status ? showProcess() : mainContent(),
+    );
+  }
+
+  Container mainContent() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: RadialGradient(
+          colors: <Color>[Colors.white, MyStyle().primaryColor],
+          radius: 1.0,
         ),
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              showLogo(),
-              showAppName(),
-              userForm(),
-              passwordForm(),
-              showButton(),
-            ],
-          ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            showLogo(),
+            showAppName(),
+            userForm(),
+            mySizebox(),
+            passwordForm(),
+            mySizebox(),
+            showButton(),
+          ],
         ),
       ),
     );
